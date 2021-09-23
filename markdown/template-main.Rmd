@@ -1,0 +1,164 @@
+---
+title: Working Paper Template
+author: 
+  - First Author^[Institution, University, <email@address.com>]
+  - Second Author^[Other Institution, Other University, <email@address.com>]
+date: \today
+abstract: |
+   You can include the text for your abstract here. 
+thanks: |
+  Thanks ...
+keywords: [Inequality, Intersectionality, Measurement, Poverty]
+jel: [I24, I32, J15, J16]
+bibliography: template-bib.bib
+csl: 'apa-no-ampersand.csl'
+output: 
+  bookdown::pdf_document2:
+    template: pandoc_template.tex
+    keep_tex: true
+    number_sections: yes
+    toc: false
+    extra_dependencies: ["placeins", "flafter", "subfig"]
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(message=FALSE, warning=FALSE,
+                      echo = FALSE, 
+                      fig.path='figures/') 
+
+#knitr::knit_hooks$set(inline = function(x) prettyNum(x, big.mark=","))
+```
+
+```{r loadlibraries, include=FALSE}
+library(tidyverse)
+library(magrittr)
+library(knitr)
+library(kableExtra)
+library(estimatr)
+library(modelsummary)
+library(gtsummary)
+library(aswp)
+```
+
+```{r loaddata, include=FALSE}
+# load custom functions
+source("functions/functions.R")
+
+# load data or run cleainingfile in case file does not exist
+if (!file.exists("data/cleaned.Rda")) {
+  source("code/cleaning.R")
+}
+
+# run external analyses
+source("code/analysis.R")
+
+ggplot2::theme_set(ggplot2::theme_bw())  ## (this just globally sets the ggplot2 theme to theme_bw)
+```
+
+
+# Introduction {#introduction}
+
+I can cite @Illing2020 like this. I can also cite in parentheses [@Illing2020].
+
+The remainder of this paper proceeds as follows. Section \@ref(background) introduces X. Section \@ref(methods) describes the empirical strategy to estimate Y. Section \@ref(data) presents more information on the data. Section \@ref(results) presents the results of the analysis. Section \@ref(conclusion) concludes.
+
+The command `\FloatBarrier` makes sure that floats such as tables and figures stay in their section.
+\FloatBarrier 
+
+# Background {#background}
+
+\FloatBarrier
+
+# Methodology {#methods}
+
+\FloatBarrier
+
+# Data {#data}
+
+In many empirical papers you will have a Table One, aka a table with sample statistics or a balance table in case of an experimental paper. The easiest way is to use `gtsummary::tbl_summary` to print a table with summary stats. 
+
+```{r summary1}
+mtcustom %>% 
+  select(mpg:drat) %>% 
+  tbl_summary() %>% 
+  as_kable_extra(caption = "Summary statistics with gtsummary", 
+                 booktabs = T)
+```
+
+At the moment the table caption appears below the table. I have not figured out yet why it does that.
+
+
+We can also make a balance table. 
+
+```{r balance, floatfoot = "(ref:note-balance)"}
+datasummary_balance(~am, 
+                    data = mtcustom, 
+                    output = "kableExtra", 
+                    title = "A balance table using modelsummary", 
+                    notes = "We can either add notes as part of the modelsummary/datasummary function call"
+                    )
+```
+
+(ref:note-balance) **Notes:** Or as part of the floatfoot environment provided by the aswp package. 
+
+We can also generate a balance table using the `gtsummary` package, just as before
+
+```{r balance2}
+mtcustom %>% 
+  tbl_summary(by=am
+              ) %>% 
+  add_p() %>% 
+  as_kable_extra(caption="Balance Table with gtsummary", 
+                 booktabs=T) %>% 
+  add_footnote(label = c("We can also add footnotes here"))
+```
+
+
+\FloatBarrier
+
+# Results {#results}
+
+When we plot results the `floatfoot` environment allows us to add long notes to figures.
+
+(ref:note-figure) **Notes:** Place the figure notes here to make sure they appear below the figure. I'm writing a bit more to show how nicely it works even with longer figure notes. 
+
+```{r figure, fig.cap="A Figure", floatfoot= "(ref:note-figure)"}
+mtcustom %>% 
+  group_by(cyl, am) %>% 
+  summarize(mean_mpg = mean(mpg)) %>% 
+  ggplot(aes(x=cyl, y=mean_mpg, fill=am)) +
+  geom_col(position = "dodge") +
+  scale_fill_viridis_d()
+  
+```
+
+
+We can also use modelsummary for regression tables. 
+
+```{r reg, floatfoot = "(ref:note-reg)"}
+modelsummary(list(m1, m2), 
+             output = "kableExtra", 
+             stars = TRUE, 
+             title = "Title for the table", 
+             notes = list("\\emph{Notes:} I can add notes", "And even more notes if I want")
+             )
+```
+
+\FloatBarrier
+
+# Conclusion {#conclusion}
+
+\clearpage
+
+# References {.unnumbered}
+
+::: {#refs}
+:::
+
+```{=tex}
+\appendix
+\clearpage
+```
+# Appendix Section 
+
+\FloatBarrier
