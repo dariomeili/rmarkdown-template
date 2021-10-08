@@ -6,3 +6,6 @@ glimpse(mtcars)
 mtcustom <- mtcars %>% 
   mutate(cyl = as_factor(cyl), 
          am = as_factor(am))
+
+save(mtcustom, file="data/mtcustom.Rda")
+

@@ -1,32 +1,32 @@
 ---
 title: Working Paper Template
 author: 
-  - First Author^[Institution, University, <email@address.com>]
-  - Second Author^[Other Institution, Other University, <email@address.com>]
+  - name: Dario Meili
+    affiliation: Development Economics Group, ETH Zurich, Switzerland, <dario.meili@nadel.ethz.ch>
+  - name: Second Author
+    affiliation: Second istitution
 date: \today
 abstract: |
    You can include the text for your abstract here. 
 thanks: |
   Thanks ...
-keywords: [Inequality, Intersectionality, Measurement, Poverty]
+keywords: [Keyword A, Keyword B, Keyword, C]
 jel: [I24, I32, J15, J16]
 bibliography: template-bib.bib
 csl: 'apa-no-ampersand.csl'
 output: 
   bookdown::pdf_document2:
-    template: pandoc_template.tex
-    keep_tex: true
-    number_sections: yes
-    toc: false
-    extra_dependencies: ["placeins", "flafter", "subfig"]
+    latex_engine: xelatex
+    template: template.tex
+    extra_dependencies: ["flafter", "placeins"]
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(message=FALSE, warning=FALSE,
+knitr::opts_chunk$set(message=FALSE,
+                      warning=FALSE,
                       echo = FALSE, 
-                      fig.path='figures/') 
-
-#knitr::knit_hooks$set(inline = function(x) prettyNum(x, big.mark=","))
+                      fig.path='figures/', 
+                      floatfoot.envs = c("figure", "table", "longtabu")) 
 ```
 
 ```{r loadlibraries, include=FALSE}
@@ -44,7 +44,7 @@ library(aswp)
 # load custom functions
 source("functions/functions.R")
 
-# load data or run cleainingfile in case file does not exist
+# load data or run cleaningfile in case file does not exist
 if (!file.exists("data/cleaned.Rda")) {
   source("code/cleaning.R")
 }
@@ -95,8 +95,8 @@ datasummary_balance(~am,
                     data = mtcustom, 
                     output = "kableExtra", 
                     title = "A balance table using modelsummary", 
-                    notes = "We can either add notes as part of the modelsummary/datasummary function call"
-                    )
+                    notes = "We can either add notes as part of the modelsummary/datasummary function call")
+                    
 ```
 
 (ref:note-balance) **Notes:** Or as part of the floatfoot environment provided by the aswp package. 
@@ -143,6 +143,8 @@ modelsummary(list(m1, m2),
              notes = list("\\emph{Notes:} I can add notes", "And even more notes if I want")
              )
 ```
+
+(ref:note-reg) **Notes:** This is a table not that is not a part of the table, but rather attached to it below. This might be useful for some table-making functions that are not very flexible when it comes to table notes. 
 
 \FloatBarrier
 
